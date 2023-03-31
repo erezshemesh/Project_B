@@ -8,8 +8,6 @@ from eval_policy import eval_policy
 import openpyxl
 import os
 
-DAY_BEGIN_SEC = 21600
-DAY_END_SEC = 86400
 
 
 # This function creates a dictionary from the first two columns of specified workbook sheet
@@ -105,7 +103,7 @@ history_counter = counter_worksheet['B2'].value
 config_workbook.close()
 
 step_size = hyper_param_dic['step_size']
-steps_per_day = int((DAY_END_SEC - DAY_BEGIN_SEC) / step_size)
+steps_per_day = int((DAY_END - DAY_START) / step_size)
 days_in_episode = hyper_param_dic['days_in_episode']
 steps_per_episode = steps_per_day * days_in_episode
 iteration_num = hyper_param_dic['iteration_number']
@@ -247,6 +245,3 @@ if __name__ == '__main__':
     T, L, P = table_loader(gen_param_dic['generate_new'], gen_param_dic['load_index'])
     args = get_args()  # Parse arguments from command line
     main(args)
-    print(T, "\n")
-    print(L, "\n")
-    print(P, "\n")

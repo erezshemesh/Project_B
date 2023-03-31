@@ -1,9 +1,6 @@
 import numpy as np
 import datetime
 
-iterations = 0
-max_iterations = 500
-
 
 def to_time(sec):
     return str(datetime.timedelta(seconds=int(sec)))
@@ -63,3 +60,9 @@ class TrainState:
     def __init__(self):
         self.state = states.WAITING_FOR_FIRST_DEPART
         self.station = 0  # station marks the last station if between station and current station if in station
+
+
+iterations = 0
+max_iterations = 500
+DAY_START = to_sec('06:00:00')
+DAY_END = to_sec('23:59:59')
