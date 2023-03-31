@@ -6,6 +6,7 @@ import gym
 from sys import exit
 
 
+# Hi Erez Shemesh
 class TrainSystem:
 
     def __init__(self, T, L, P, gen: Generator, step_size=300):
