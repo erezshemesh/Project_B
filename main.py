@@ -18,7 +18,7 @@ from openpyxl import load_workbook
 import os
 from torch.utils.tensorboard import SummaryWriter
 
-#Erez Shemesh 211
+#Erez Shemesh 2111
 # consts:
 DAY_BEGIN_SEC = 21600
 DAY_END_SEC = 86400
