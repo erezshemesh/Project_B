@@ -19,6 +19,7 @@ import os
 from torch.utils.tensorboard import SummaryWriter
 
 #Erez Shemesh 2111
+# daniel
 # consts:
 DAY_BEGIN_SEC = 21600
 DAY_END_SEC = 86400
