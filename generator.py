@@ -79,17 +79,6 @@ class Generator:
                 total_boarded = total_boarded + self.board_amount(L, P, i, j)
         return -total_boarded
 
-    def perfect_objective(self, V):
-        return 1
-        # this objective should include all of these demands:
-        # 1. max board
-        # 2. min block (final)
-        # 3. min late
-        # 4. min wait
-        # 5. min temp blocks
-        # 6. evenly spaced trains
-        # 7. no overload in the far stations for the first train
-
     def callback(self, V):
         global iterations, max_iterations
         if iterations == 0:

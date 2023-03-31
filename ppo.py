@@ -1,27 +1,16 @@
-"""
-    The file contains the PPO class to train with.
-    NOTE: All "ALG STEP"s are following the numbers from the original PPO pseudocode.
-            It can be found here: https://spinningup.openai.com/en/latest/_images/math/e62a8971472597f4b014c2da064f636ffe365ba3.svg
-"""
-
 import gym
-import time
 import numpy as np
 import time
 import torch
 import torch.nn as nn
 from torch.optim import Adam
 from torch.distributions import MultivariateNormal
-import tensorflow as tf
-from torch.utils import tensorboard
 from torch.utils.tensorboard import SummaryWriter
-
 
 class PPO:
     """
         This is the PPO class we will use as our model in main.py
     """
-
     def __init__(self, policy_class, env, **hyperparameters):
         """
             Initializes the PPO model, including hyperparameters.
@@ -73,6 +62,7 @@ class PPO:
             'actor_losses': [],  # losses of actor network in current iteration
         }
         self.writer = SummaryWriter('runs/tb_experiment')
+
     def learn(self, total_timesteps):
         """
             Train the actor and critic networks. Here is where the main PPO algorithm resides.

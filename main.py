@@ -1,48 +1,15 @@
-"""
-    This file is the executable for running PPO. It is based on this medium article:
-    https://medium.com/@eyyu/coding-ppo-from-scratch-with-pytorch-part-1-4-613dfc1b14c8
-"""
 import math
-
-import gym
 import sys
-import torch
 from train_system import *
 from arguments import get_args
 from ppo import PPO
 from network import FeedForwardNN
 from eval_policy import eval_policy
 import openpyxl
-import pandas as pd
-from openpyxl import load_workbook
 import os
-from torch.utils.tensorboard import SummaryWriter
 
-#Erez Shemesh 2111
-# daniel
-# consts:
 DAY_BEGIN_SEC = 21600
 DAY_END_SEC = 86400
-
-# Table generation:
-
-T = np.array([[41002, 43133, 45466, 47962],
-              [76220, 79164, 82408, 85859],
-              [82260, 83589, 84864, 86039],
-              [82917, 84022, 85122, 86219],
-              [83125, 84216, 85307, 86399]])
-
-L = np.array([[1940, 3209, 4096, 4770],
-              [3521, 5716, 7123, 8063],
-              [603, 804, 728, 455],
-              [65, 82, 75, 63],
-              [20, 31, 37, 40]])
-
-P = np.array([[1940, 2045, 2170, 2312],
-              [3521, 3603, 3694, 3789],
-              [603, 442, 245, 18],
-              [65, 43, 25, 18],
-              [20, 19, 18, 18]])
 
 
 # This function creates a dictionary from the first two columns of specified workbook sheet
@@ -83,7 +50,8 @@ def save_table(table, table_type, folder_name):
         np.savetxt(path, table)
         print((table_type + "_" + str(history_counter)), " created and written successfully!")
 
-def save_generated_tables(T,L,P):
+
+def save_generated_tables(T, L, P):
     save_table(T, "T", "T_history")
     save_table(L, "L", "L_history")
     save_table(P, "P", "P_history")
@@ -99,16 +67,16 @@ def table_loader(en, history_index=math.nan):  # TODO: instead of en, use comman
         # Save tables to .txt files in directories:
         save_generated_tables(new_T, new_L, new_P)
         # History counter proceeding:
-        update_history_counter(5) #TODO: make it paramater in config_file
+        update_history_counter(5)  # TODO: make it paramater in config_file
         # Return new tables:
         return new_T, new_L, new_P
     else:
-        #Load tables from history:
+        # Load tables from history:
         filename_T = "T" + "_" + str(history_index) + ".txt"
         filename_L = "L" + "_" + str(history_index) + ".txt"
         filename_P = "P" + "_" + str(history_index) + ".txt"
         path_T = os.path.join(os.getcwd(), "T_history", filename_T)
-        print (path_T)
+        print(path_T)
         path_L = os.path.join(os.getcwd(), "L_history", filename_L)
         path_P = os.path.join(os.getcwd(), "P_history", filename_P)
         # Check file paths:
@@ -134,24 +102,16 @@ dic_creator('generator_parameters', config_workbook, gen_param_dic)
 # loads / generates tables:
 counter_worksheet = config_workbook['counters']
 history_counter = counter_worksheet['B2'].value
-# if False:
-#     update_history_counter(5)
-# saves generated tables in history xlsx:
-# closes workbook:
 config_workbook.close()
-# TODO: handle table saving according to flags: (Use chatGPT  \ Stackoverflow for help)
-
 
 step_size = hyper_param_dic['step_size']
 steps_per_day = int((DAY_END_SEC - DAY_BEGIN_SEC) / step_size)
-days_in_episode = hyper_param_dic['days_in_episode']  # default value = 1
+days_in_episode = hyper_param_dic['days_in_episode']
 steps_per_episode = steps_per_day * days_in_episode
-iteration_num = hyper_param_dic['iteration_number']  # default value = 1
-# Batch can contain more than 1 episode as far as I understand
+iteration_num = hyper_param_dic['iteration_number']
 episodes_in_batch = hyper_param_dic['episodes_in_batch']
 
 # Generator:
-
 g = Generator(
     trains=gen_param_dic['trains'],
     stations=gen_param_dic['stations'],
@@ -207,6 +167,7 @@ def train(env, hyperparameters, actor_model, critic_model):
     total_timesteps = steps_per_day * days_in_episode * episodes_in_batch * iteration_num
     model.learn(total_timesteps)
 
+
 def test(env, actor_model):
     """
         Tests the model.
@@ -241,6 +202,7 @@ def test(env, actor_model):
     # independently as a binary file that can be loaded in with torch.
     eval_policy(policy=policy, env=env, render=False)
 
+
 def main(args):
     """
         The main function to run.
@@ -256,7 +218,6 @@ def main(args):
     # ArgumentParser because it's too annoying to type them every time at command line. Instead, you can change them here.
     # To see a list of hyperparameters, look in ppo.py at function _init_hyperparameters
     hyperparameters = {
-
         'timesteps_per_batch': steps_per_episode * episodes_in_batch,
         'max_timesteps_per_episode': steps_per_episode,
         'gamma': hyper_param_dic['gamma'],
@@ -271,8 +232,6 @@ def main(args):
     # custom environment, note that it must inherit Gym and have both continuous
     # observation and action sp
     # aces.
-
-    # env = gym.make('Pendulum-v0')
     env = GymTrainSystem(T, L, P, g, step_size)
 
     # Train or test, depending on the mode specified
@@ -281,12 +240,13 @@ def main(args):
     else:
         test(env=env, actor_model=args.actor_model)
 
+
 if __name__ == '__main__':
     # If you manually delete history folders or some files inside, it is important to reset history_counter!
-    #update_history_counter(5,True)
-    T,L,P = table_loader(gen_param_dic['generate_new'], gen_param_dic['load_index'])
+    # update_history_counter(5,True)
+    T, L, P = table_loader(gen_param_dic['generate_new'], gen_param_dic['load_index'])
     args = get_args()  # Parse arguments from command line
     main(args)
-    print(T,"\n")
-    print(L,"\n")
-    print(P,"\n")
+    print(T, "\n")
+    print(L, "\n")
+    print(P, "\n")

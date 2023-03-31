@@ -1,9 +1,4 @@
-from scipy.optimize import minimize
-import torch
-import torch.nn as nn
-import torch.optim as optim
 import numpy as np
-import gym
 import datetime
 
 iterations = 0
@@ -60,13 +55,11 @@ class Units:
         self.second = 1
 
 
-
 states = States()
 units = Units()
 
 
 class TrainState:
-
     def __init__(self):
         self.state = states.WAITING_FOR_FIRST_DEPART
         self.station = 0  # station marks the last station if between station and current station if in station
