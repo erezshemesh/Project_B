@@ -1,5 +1,6 @@
 import numpy as np
 import datetime
+from scipy.optimize import minimize
 
 
 def to_time(sec):

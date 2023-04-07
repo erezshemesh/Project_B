@@ -1,3 +1,5 @@
+import sys
+import os
 import gym
 import numpy as np
 import time
@@ -7,10 +9,12 @@ from torch.optim import Adam
 from torch.distributions import MultivariateNormal
 from torch.utils.tensorboard import SummaryWriter
 
+
 class PPO:
     """
         This is the PPO class we will use as our model in main.py
     """
+
     def __init__(self, policy_class, env, **hyperparameters):
         """
             Initializes the PPO model, including hyperparameters.
@@ -61,6 +65,10 @@ class PPO:
             'batch_rews': [],  # episodic returns in batch
             'actor_losses': [],  # losses of actor network in current iteration
         }
+
+        if os.path.isdir('runs'):
+            print("transfer to previous runs")
+            sys.exit()
         self.writer = SummaryWriter('runs/tb_experiment')
 
     def learn(self, total_timesteps):
@@ -99,7 +107,7 @@ class PPO:
             # isn't theoretically necessary, but in practice it decreases the variance of
             # our advantages and makes convergence much more stable and faster. I added this because
             # solving some environments was too unstable without it.
-            A_k = (A_k - A_k.mean()) / (A_k.std() + 1e-10)
+            # A_k = (A_k - A_k.mean()) / (A_k.std() + 1e-10)
 
             # This is the loop where we update our network for some n epochs
             for _ in range(self.n_updates_per_iteration):  # ALG STEP 6 & 7
@@ -378,11 +386,19 @@ class PPO:
         avg_ep_rews = np.mean([np.sum(ep_rews) for ep_rews in self.logger['batch_rews']])
         avg_actor_loss = np.mean([losses.float().mean() for losses in self.logger['actor_losses']])
         self.writer.add_scalar('reward', avg_ep_rews, i_so_far)
+
+        actor_layers = [self.actor.layer1, self.actor.layer2 , self.actor.layer3]
+        critic_layers = [self.critic.layer1, self.critic.layer2, self.critic.layer3]
+        nets = [['actor', actor_layers], ['critic', critic_layers]]
+        for net in nets:
+            for n in range(1, 4):
+                self.writer.add_histogram(net[0]+'/layer'+str(n)+'/weight', net[1][n - 1].weight.data, i_so_far )
+                self.writer.add_histogram(net[0] + '/layer' + str(n) + '/bias', net[1][n - 1].bias.data, i_so_far)
+
         # Round decimal places for more aesthetic logging messages
         avg_ep_lens = str(round(avg_ep_lens, 2))
         avg_ep_rews = str(round(avg_ep_rews, 2))
         avg_actor_loss = str(round(avg_actor_loss, 5))
-
 
         # Print logging statements
         print(flush=True)

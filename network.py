@@ -34,10 +34,10 @@ class FeedForwardNN(nn.Module):
         # Convert observation to tensor if it's a numpy array
         if isinstance(obs, np.ndarray):
             obs = torch.tensor(obs, dtype=torch.float)
-        activation1 = F.relu(self.layer1(obs))
-        activation2 = F.relu(self.layer2(activation1))
+        activation1 = F.relu(self.layer1(obs) / 100)
+        activation2 = F.relu(self.layer2(activation1) / 100)
         if self.bound != -1000:
-            output = torch.tanh(self.layer3(activation2))
+            output = torch.tanh(self.layer3(activation2) / 100)
             output = output.mul(self.bound)
         else:
             output = self.layer3(activation2)
