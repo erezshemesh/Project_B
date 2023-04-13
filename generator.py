@@ -288,3 +288,6 @@ class Generator:
                 assert (self.min_valid_L(Vsol, i, j) >= 0 and self.max_valid_L(Vsol, i, j) >= 0)
                 assert (self.min_valid_T(Vsol, i, j) >= 0 and self.max_valid_T(Vsol, i, j) >= 0)
                 assert (self.min_valid_P(Vsol, i, j) >= 0 and self.max_valid_P(Vsol, i, j) >= 0)
+
+
+

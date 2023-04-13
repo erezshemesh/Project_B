@@ -5,7 +5,7 @@ import numpy as np
 import time
 import torch
 import torch.nn as nn
-from torch.optim import Adam
+from torch.optim import Adam, RMSprop
 from torch.distributions import MultivariateNormal
 from torch.utils.tensorboard import SummaryWriter
 
@@ -49,8 +49,8 @@ class PPO:
         self.critic = policy_class(self.obs_dim, 1)
 
         # Initialize optimizers for actor and critic
-        self.actor_optim = Adam(self.actor.parameters(), lr=self.lr)
-        self.critic_optim = Adam(self.critic.parameters(), lr=self.lr)
+        self.actor_optim = RMSprop(self.actor.parameters(), lr=self.lr)
+        self.critic_optim = RMSprop(self.critic.parameters(), lr=self.lr)
 
         # Initialize the covariance matrix used to query the actor for actions
         self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.5)
